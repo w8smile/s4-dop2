@@ -3,6 +3,7 @@ import { decksAPI, UpdateDeckParams } from './decks-api.ts'
 import { addDeckAC, deleteDeckAC, setDecksAC, updateDeckAC } from './decks-reducer.ts'
 import { setErrorAC, setStatusAC } from '../../app/app-reducer.ts'
 import { isAxiosError } from 'axios'
+import { handleError } from '../../common/utils/handle-error.ts'
 
 export const fetchDecksTC = () => async (dispatch: Dispatch) => {
   try {
@@ -26,14 +27,7 @@ export const deleteDeckTC = (id: string) => async (dispatch: Dispatch) => {
     const res = await decksAPI.deleteDeck(id)
     dispatch(deleteDeckAC(res.data.id))
   } catch (error) {
-    let errorMessage: string
-
-    if (isAxiosError(error))
-      errorMessage = error.response
-        ? `Ошибка сервера ${error.response.data.errorMessages[0].message}`
-        : `Ошибка клиента: ${error.message}`
-    else errorMessage = `Другая ошибка: ${(error as Error).message}`
-    console.log(errorMessage)
+    handleError(error,dispatch)
   }
 }
 
@@ -42,13 +36,6 @@ export const updateDeckTC = (params: UpdateDeckParams) => async (dispatch: Dispa
     const res = await decksAPI.updateDeck(params)
     dispatch(updateDeckAC(res.data))
   } catch (error) {
-    let errorMessage: string
-
-    if (isAxiosError(error))
-      errorMessage = error.response
-      ? `Ошибка сервера ${error.response.data.errorMessages[0].message}`
-      : `Ошибка клиента: ${error.message}`
-    else errorMessage = `Другая ошибка: ${(error as Error).message}`
-    console.log(errorMessage)
+    handleError(error,dispatch)
   }
 }
