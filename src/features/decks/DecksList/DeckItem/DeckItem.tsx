@@ -2,6 +2,7 @@ import s from './DeckItem.module.css'
 import { useAppDispatch } from '../../../../app/store.ts'
 import { deleteDeckTC, updateDeckTC } from '../../decks-thunks.ts'
 import { Deck } from '../../decks-api.ts'
+import { useState } from 'react'
 
 type DeckProps = {
   deck: Deck
@@ -13,12 +14,18 @@ export const DeckItem = ({ deck }: DeckProps) => {
   const isTestingDeck = deck.author.name === TEST_ACC_NAME
   const dispatch = useAppDispatch()
 
+  const [loading, setLoading] = useState(false)
+
   const handleDeleteButtonClick = () => {
+    setLoading(true)
     dispatch(deleteDeckTC(deck.id))
+      .then((e)=>setLoading(false))
   }
 
   const handleEditButtonClick = () => {
+    setLoading(true)
     dispatch(updateDeckTC({ id: deck.id, name: `${deck.name} updated` }))
+      .then((e)=>setLoading(false))
   }
 
   return (
@@ -39,8 +46,8 @@ export const DeckItem = ({ deck }: DeckProps) => {
 
       {isTestingDeck && (
         <div className={s.buttonBox}>
-          <button onClick={handleEditButtonClick}>update</button>
-          <button onClick={handleDeleteButtonClick}>delete</button>
+          <button disabled={loading} onClick={handleEditButtonClick}>update</button>
+          <button disabled={loading} onClick={handleDeleteButtonClick}>delete</button>
         </div>
       )}
     </li>
